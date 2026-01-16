@@ -2,8 +2,9 @@ import React from 'react'
 import Form from './Component/Form'
 const App = () => {
   return (
-    <div>
+    <div className='app'>
       <Form />
+      
     </div>
   )
 }
