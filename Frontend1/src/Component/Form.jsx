@@ -1,126 +1,55 @@
 import React, { useState } from "react";
+import "./Form.css"
 
 const Form = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    age: "",
-    country: "",
-    email: "",
-    contact: ""
-  });
+  const [data,setData] = useState([]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+ const validateForm = () => {
+  const {name,age,email,country} = data;
+
+  if (!name || !age || !email || !country) {
+    alert("All fields are required");
+    return false;
+  }
+
+if (Number(age <= 0)) {
+    alert("Age must be greater than 0");
+    return false;
+  }
+
+  const emailExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailExp.test(email)) {
+    alert("Please enter a valid email");
+    return false;
+  }
+  return true;
+};
+
+  const handleChange = (e,namePara) =>{
+  setData(prev => ({
+    ...prev,
+    [namePara]: e.target.value
+  }));
+    console.log(data);
+  }
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const { name, age, country, email, contact } = formData;
-
-
-    if (name.trim() === "") {
-      alert("Name is required");
-      return;
-    }
-
-    if (!age || age <= 0) {
-      alert("Please enter a valid age");
-      return;
-    }
-
-    if (country.trim() === "") {
-      alert("Country is required");
-      return;
-    }
-
-    if (!email) {
-      alert("Email is required");
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      alert("Enter a valid email");
-      return;
-    }
-
-    if (!contact) {
-      alert("Contact number is required");
-      return;
-    }
-
-    if (!/^\d{10}$/.test(contact)) {
-      alert("Contact must be 10 digits");
-      return;
-    }
-
- 
-    console.log("Form Data:", formData);
-    alert("Form submitted successfully ");
-
-  
-    setFormData({
-      name: "",
-      age: "",
-      country: "",
-      email: "",
-      contact: ""
-    });
+    if (!validateForm()) return;
+    console.log(data)
   };
-
   return (
     <div>
-      <h3>User Form</h3>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-        <br /><br />
-
-        <input
-          type="number"
-          name="age"
-          placeholder="Age"
-          value={formData.age}
-          onChange={handleChange}
-        />
-        <br /><br />
-
-        <input
-          type="text"
-          name="country"
-          placeholder="Country"
-          value={formData.country}
-          onChange={handleChange}
-        />
-        <br /><br />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-        />
-        <br /><br />
-
-        <input
-          type="text"
-          name="contact"
-          placeholder="Contact Number"
-          value={formData.contact}
-          onChange={handleChange}
-        />
-        <br /><br />
-
+      <form onSubmit={handleSubmit} >
+        <input type="text" name="name" placeholder="Enter your name" onChange={(e) => handleChange(e, 'name')} value={data?.name} /><br/><br/>
+        <input type="text" name="age" placeholder="Enter your age" onChange={(e) => handleChange(e, 'age')} value={data?.age}/><br/><br/>
+        <input type="email" name="email" placeholder="Enter your email" onChange={(e) => handleChange(e, 'email')} value={data?.email}/><br/><br/>
+        <input type="text" name="country" placeholder="Enter your country" onChange={(e) => handleChange(e, 'country')} value={data?.country}/><br/><br/>
+        <label> 
+          <input type="radio" name="Gender" value="Female" onChange={(e) => handleChange(e, 'Gender')} />Female<br/>
+          <input type="radio" name="Gender" value="Male" onChange={(e) => handleChange(e, 'Gender')}/>Male<br/>
+        </label><br/>
         <button type="submit">Submit</button>
       </form>
     </div>

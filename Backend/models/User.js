@@ -23,11 +23,6 @@ const userSchema = new mongoose.Schema(
       unique: true, 
       
     },
-
-    contact: {
-      type: String,
-      required: true,
-    },
   },
   { timestamps: true }
 );
