@@ -4,15 +4,15 @@ const User = require("../models/User");
 
 router.post("/add", async (req, res) => {
   try {
-    const { name, age, country, email, contact } = req.body;
+    const { name, age, country, email } = req.body;
 
-    if (!name || !age || !country || !email || !contact) {
+    if (!name || !age || !country || !email) {
       return res.status(400).json({
         message: "All fields are required"
       });
     }
 
-    const user = new User({ name, age, country, email, contact });
+    const user = new User({ name, age, country, email });
     await user.save();
 
     res.status(201).json({
@@ -25,5 +25,7 @@ router.post("/add", async (req, res) => {
     });
   }
 });
+
+
 
 module.exports = router;
