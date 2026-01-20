@@ -7,7 +7,7 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect("mongodb://localhost:27017/reactdemo").then(() => {console.log("database connected")}).catch((err) => {console.log("error in connecting");
+mongoose.connect("mongodb://localhost:27017/officeworkDB").then(() => {console.log("database connected")}).catch((err) => {console.log("error in connecting");
 });
 
 const userRoutes = require('./routes/userRoutes');

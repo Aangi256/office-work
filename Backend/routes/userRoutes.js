@@ -5,7 +5,8 @@ const User = require("../models/User");
 router.post("/add", async (req, res) => {
   try {
     const { name, age, country, email } = req.body;
-
+    console.log(req.body);
+    
     if (!name || !age || !country || !email) {
       return res.status(400).json({
         message: "All fields are required"
