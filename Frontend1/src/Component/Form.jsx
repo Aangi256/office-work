@@ -51,13 +51,7 @@ const Form = () => {
       if (response.ok) {
         alert("Data stored successfully");
 
-        setData({
-          name: "",
-          age: "",
-          email: "",
-          country: "",
-          Gender: ""
-        });
+        setData({});
       } else {
         alert(result.message);
       }
