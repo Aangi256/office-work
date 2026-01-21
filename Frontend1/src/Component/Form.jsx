@@ -32,11 +32,40 @@ const Form = () => {
     }));
   };
 
+  const checkEmailExists = async (email) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/users/checkemails",{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: email }),
+      }
+    );
+
+    if(!response.ok){
+      throw new Error("Failed to check email");
+    }
+     const result = await response.json();
+    return result.exists;
+    } catch (error) {
+      console.error("Email check error:",error );
+      return false;
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
+    const emailExists =  checkEmailExists(data.email);
+
+    if(await emailExists){
+      alert("Email already exists ");
+    return;
+    }
+    else{
     try {
       const response = await fetch("http://localhost:5000/api/users/add", {
         method: "POST",
@@ -59,6 +88,7 @@ const Form = () => {
       console.log(error);
       alert("Server error");
     }
+  }
   }; 
 
   return (
@@ -94,3 +124,5 @@ const Form = () => {
 };
 
 export default Form;
+
+

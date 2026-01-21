@@ -17,10 +17,30 @@ router.post("/add", async (req, res) => {
     });
 
   } catch (error) {
-    if(error.code === 11000)
-    return res.status(409).json({ message: "This email already exists " });
+    console.log(error);
+    return res.status(409).json({ message: "Internal error occured " });
+  }
+
+  return res.status(500).json({
+    message:"Server error"
+  });
+});
+
+
+
+
+router.post("/checkemails", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email :email });
+
+    res.json({ exists: !!user });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
   }
 });
+
 
 
 router.get("/",async (req,res)=>{
