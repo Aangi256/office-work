@@ -3,11 +3,6 @@ const router = express.Router();
 const User = require("../models/User");
 const upload = require("../middleware/upload")
 
-
-
-
-
-// const multer = require("multer");
 router.post("/add",  upload.single("image"), async (req, res) => {
   try {
     // console.log("Body",req.body);
@@ -25,8 +20,8 @@ router.post("/add",  upload.single("image"), async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
-    return res.status(409).json({ message: "Internal error occured " });
+    // console.log(error.errorResponse);
+    return res.status(500).json({ message: error.errorResponse.errmsg });
   }
 
   return res.status(500).json({
