@@ -13,3 +13,14 @@ class Car {
 }
 const myCar = new Car("Mercedes", "Black");
 myCar.drive();
+
+
+
+
+
+
+
+
+
+
+

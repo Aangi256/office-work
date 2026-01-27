@@ -46,7 +46,7 @@ const Form = () => {
     if(!response.ok){
       throw new Error("Failed to check email");
     }
-     const result = await response.json();
+    const result = await response.json();
     return result.exists;
     } catch (error) {
       console.error("Email check error:",error );
