@@ -1,34 +1,44 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const upload = require("../middleware/upload")
+const upload = require("../middleware/upload");
 
-router.post("/add",  upload.single("image"), async (req, res) => {
-  try {
-    // console.log("Body",req.body);
-    // console.log("File",req.file);
-    const { name, age, country, email } = req.body;
+router.post(
+  "/add",
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { name, age, country, email } = req.body;
 
-    if (!name || !age || !country || !email ) {
-      return res.status(400).json({ message: "All fields are required" });
+      if (!name || !age || !country || !email) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({ message: "Email already exists" });
+      }
+
+      const user = new User({
+        name,
+        age: Number(age),
+        country,
+        email,
+        image: req.file ? req.file.filename : null,
+      });
+
+      await user.save();
+
+      res.status(201).json({
+        message: "User added successfully",
+        user,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
     }
-    const user = new User({ name, age, country, email, image:req.file?.filename, });
-    await user.save();
-
-    res.status(201).json({
-      message: "User added successfully"
-    });
-
-  } catch (error) {
-    // console.log(error.errorResponse);
-    return res.status(500).json({ message: error.errorResponse.errmsg });
   }
-
-  return res.status(500).json({
-    message:"Server error"
-  });
-});
-
+);
 
 
 
@@ -36,25 +46,28 @@ router.post("/checkemails", async (req, res) => {
   try {
     const { email } = req.body;
 
-    const user = await User.findOne({ email :email });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
 
-    res.json({ exists: !!user });
+    const user = await User.findOne({ email });
+    res.status(200).json({ exists: !!user });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    console.error("Check Email Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 
-
-router.get("/",async (req,res)=>{
-  console.log("Data is been read");
-  
+router.get("/", async (req, res) => {
   try {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({message: "Error fetching users"})
+    console.error("Get Users Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
+
 
 module.exports = router;

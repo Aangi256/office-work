@@ -1,54 +1,51 @@
-import React,{useState,useEffect} from 'react'
+import React from "react";
+import "./UserList.css";
 
-const UserList = () => {
-    const [users,setUsers] = useState([]);
-   
-
-    useEffect(() => {
-    const getUsers = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/api/users");
-            const data = await response.json();
-            setUsers(data);
-        } catch (error) {
-            console.log("Error fetching users",error);
-        }
-    };
-
-    getUsers();
-    }, []);
+const UserList = ({ users }) => {
   return (
-    <div className = "table-container">
+    <div className="userlist-container">
+      <div className="table-container">
         <h2>User List</h2>
         <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Age</th>
-                    <th>Email</th>
-                    <th>Country</th>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Email</th>
+              <th>Country</th>
+              <th>Image</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.length === 0 ? (
+              <tr>
+                <td colSpan="5">No users found</td>
+              </tr>
+            ) : (
+              users.map(user => (
+                <tr key={user._id}>
+                  <td>{user.name}</td>
+                  <td>{user.age}</td>
+                  <td>{user.email}</td>
+                  <td>{user.country}</td>
+                  <td>
+                    {user.image ? (
+                      <img
+                        src={`http://localhost:5000/uploads/${user.image}`}
+                        alt="user"
+                      />
+                    ) : (
+                      "No Image"
+                    )}
+                  </td>
                 </tr>
-            </thead>
-
-            <tbody>
-                {users.length === 0 ?(
-                    <tr>
-                        <td colSpan="4">No users found</td>
-                    </tr>
-                ):(
-                    users.map((user)=>(
-                        <tr key={user._id}>
-                            <td>{user.name}</td>
-                            <td>{user.age}</td>
-                            <td>{user.email}</td>
-                            <td>{user.country}</td>
-                        </tr>
-                    ))
-                )}
-            </tbody>
+              ))
+            )}
+          </tbody>
         </table>
+      </div>
     </div>
   );
 };
 
-export default UserList
+export default UserList;
