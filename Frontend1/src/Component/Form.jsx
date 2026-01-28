@@ -72,7 +72,7 @@ const Form = ({ refreshUsers }) => {
       }
     } catch (error) {
       console.error(error);
-      alert("Server error");
+      alert(result.message);
     }
   };
 
