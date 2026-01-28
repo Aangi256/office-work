@@ -42,6 +42,29 @@ const Form = ({ refreshUsers }) => {
     return true;
   };
 
+  const updateUser = async (id) => {
+  const updatedData = {
+    name: "Updated Name",
+    age: 25,
+    email: "updated@email.com"
+  };
+
+  const response = await fetch(
+    `http://localhost:5000/api/users/update/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updatedData)
+    }
+  );
+
+  const result = await response.json();
+  console.log(result);
+};
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 

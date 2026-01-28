@@ -70,4 +70,39 @@ router.get("/", async (req, res) => {
 });
 
 
+router.put("/update", upload.single("image"), async (req, res) => {
+  try {
+    const { name, age, email } = req.body;
+
+    const updateData = { name, age };
+
+
+    if (req.file) {
+      updateData.image = req.file.filename;
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      updateData,
+      { new: true }
+    );
+
+    res.json({ message: "User updated", updatedUser });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete("/delete", async (req, res) => {
+  try {
+    const { email } = req.body;
+    await User.findOneAndDelete({ email });
+    res.json({ message: "User deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 module.exports = router;
