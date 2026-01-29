@@ -61,14 +61,29 @@ router.post("/checkemails", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+
+    const skip = (page - 1) * limit;
+
+    const totalUsers = await User.countDocuments();
+    const users = await User.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      users,
+      totalUsers,
+      totalPages: Math.ceil(totalUsers / limit),
+      currentPage: page
+    });
+
   } catch (error) {
     console.error("Get Users Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 router.put("/update", upload.single("image"), async (req, res) => {
   try {
@@ -86,7 +101,7 @@ router.put("/update", upload.single("image"), async (req, res) => {
       updateData,
       { new: true }
     );
-
+ 
     res.json({ message: "User updated", updatedUser });
 
   } catch (err) {
