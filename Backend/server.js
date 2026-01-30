@@ -6,12 +6,12 @@ const app = express();
 
 const PORT = 5000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-// Database
+
 mongoose
   .connect("mongodb://localhost:27017/officeworkDB")
   .then(() => console.log("Database connected"))
@@ -21,7 +21,7 @@ mongoose
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", userRoutes);
 
-// Multer Error Handling Middleware
+
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     return res.status(400).json({ message: err.message });
@@ -32,7 +32,7 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-// Server
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

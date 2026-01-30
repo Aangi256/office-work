@@ -88,9 +88,9 @@ const UserList = ({ refresh }) => {
 
         {[...Array(totalPages)].map((_, index) => (
           <button
-            key={index}
+            key={index} 
             className={`page-btn ${
-              currentPage === index + 1 ? "active" : ""
+              currentPage === index + 1 ? "active" : "" 
             }`}
             onClick={() => setCurrentPage(index + 1)}
           >
