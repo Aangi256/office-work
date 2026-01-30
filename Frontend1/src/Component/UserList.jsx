@@ -8,6 +8,11 @@ const UserList = ({ refresh }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState({
+    key: "name",
+    direction: "asc",
+  });
 
   const fetchUsers = async (page) => {
     try {
@@ -24,35 +29,101 @@ const UserList = ({ refresh }) => {
     }
   };
 
- 
   useEffect(() => {
     fetchUsers(currentPage);
   }, [currentPage, refresh]);
+
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    const valueA = a[sorting.key]?.toString().toLowerCase();
+    const valueB = b[sorting.key]?.toString().toLowerCase();
+
+    if (sorting.direction === "asc") {
+      return valueA.localeCompare(valueB);
+    } else {
+      return valueB.localeCompare(valueA);
+    }
+  });
+
+  const requestSort = (key) => {
+    let direction = "asc";
+    if (sorting.key === key && sorting.direction === "asc") {
+      direction = "desc";
+    }
+    setSorting({ key, direction });
+  };
+
+  const getSortIndicator = (key) => {
+    if (sorting.key === key) {
+      return sorting.direction === "asc" ? " ▲" : " ▼";
+    }
+    return "";
+  };
 
   return (
     <div className="table-container">
       <h2>User List</h2>
 
+  
+      <input
+        type="text"
+        placeholder="Search by name or email..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ marginBottom: "10px", padding: "8px", width: "220px" }}
+      />
+
       <table border="1" cellPadding="10" cellSpacing="0">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Email</th>
-            <th>Country</th>
+            <th
+              onClick={() => requestSort("name")}
+              style={{ cursor: "pointer" }}
+            >
+              Name{getSortIndicator("name")}
+            </th>
+
+            <th
+              onClick={() => requestSort("age")}
+              style={{ cursor: "pointer" }}
+            >
+              Age{getSortIndicator("age")}
+            </th>
+
+            <th
+              onClick={() => requestSort("email")}
+              style={{ cursor: "pointer" }}
+            >
+              Email{getSortIndicator("email")}
+            </th>
+
+            <th
+              onClick={() => requestSort("country")}
+              style={{ cursor: "pointer" }}
+            >
+              Country{getSortIndicator("country")}
+            </th>
+
             <th>Image</th>
           </tr>
         </thead>
 
         <tbody>
-          {users.length === 0 ? (
+          {sortedUsers.length === 0 ? (
             <tr>
               <td colSpan="5" style={{ textAlign: "center" }}>
                 No users found
               </td>
             </tr>
           ) : (
-            users.map((user) => (
+            sortedUsers.map((user) => (
               <tr key={user._id}>
                 <td>{user.name}</td>
                 <td>{user.age}</td>
@@ -77,6 +148,7 @@ const UserList = ({ refresh }) => {
         </tbody>
       </table>
 
+
       <div className="pagination-container">
         <button
           className="page-btn"
@@ -88,9 +160,9 @@ const UserList = ({ refresh }) => {
 
         {[...Array(totalPages)].map((_, index) => (
           <button
-            key={index} 
+            key={index}
             className={`page-btn ${
-              currentPage === index + 1 ? "active" : "" 
+              currentPage === index + 1 ? "active" : ""
             }`}
             onClick={() => setCurrentPage(index + 1)}
           >
