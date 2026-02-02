@@ -14,43 +14,24 @@ const UserList = ({ refresh }) => {
     direction: "asc",
   });
 
-  const fetchUsers = async (page) => {
+  const fetchUsers = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users?page=${page}&limit=${LIMIT}`
+        `http://localhost:5000/api/users?page=${currentPage}&limit=${LIMIT}&search=${search}&sort=${sorting.key}&order=${sorting.direction}`
       );
       const data = await response.json();
 
       setUsers(data.users);
       setTotalPages(data.totalPages);
-      setCurrentPage(data.currentPage);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
 
   useEffect(() => {
-    fetchUsers(currentPage);
-  }, [currentPage, refresh]);
+    fetchUsers();
+  }, [currentPage, refresh, search , sorting.key , sorting.direction]);
 
-
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-  );
-
-
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    const valueA = a[sorting.key]?.toString().toLowerCase();
-    const valueB = b[sorting.key]?.toString().toLowerCase();
-
-    if (sorting.direction === "asc") {
-      return valueA.localeCompare(valueB);
-    } else {
-      return valueB.localeCompare(valueA);
-    }
-  });
 
   const requestSort = (key) => {
     let direction = "asc";
@@ -58,6 +39,7 @@ const UserList = ({ refresh }) => {
       direction = "desc";
     }
     setSorting({ key, direction });
+    setCurrentPage(1);
   };
 
   const getSortIndicator = (key) => {
@@ -76,7 +58,10 @@ const UserList = ({ refresh }) => {
         type="text"
         placeholder="Search by name or email..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {setSearch(e.target.value);
+        setCurrentPage(1);
+        }}
+        
         style={{ marginBottom: "10px", padding: "8px", width: "220px" }}
       />
 
@@ -116,14 +101,14 @@ const UserList = ({ refresh }) => {
         </thead>
 
         <tbody>
-          {sortedUsers.length === 0 ? (
+          {!users || users.length === 0 ? (
             <tr>
               <td colSpan="5" style={{ textAlign: "center" }}>
                 No users found
               </td>
             </tr>
           ) : (
-            sortedUsers.map((user) => (
+            users.map((user) => (
               <tr key={user._id}>
                 <td>{user.name}</td>
                 <td>{user.age}</td>

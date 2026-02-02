@@ -63,27 +63,42 @@ router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
+    const search = req.query.search || "";
+    const sort = req.query.sort || "name";
+    const order = req.query.order === "desc" ? -1 : 1;
 
     const skip = (page - 1) * limit;
 
-    const totalUsers = await User.countDocuments();
-    const users = await User.find()
+    const allowedSortFields = ["name", "age", "email", "country"];
+    const sortField = allowedSortFields.includes(sort) ? sort : "name";
+
+    const searchQuery = {
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { country: { $regex: search, $options: "i" } },
+      ],
+    };
+
+    const totalUsers = await User.countDocuments(searchQuery);
+
+    const users = await User.find(searchQuery)
+      .sort({ [sortField]: order })
       .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 });
+      .limit(limit);
 
     res.status(200).json({
       users,
       totalUsers,
       totalPages: Math.ceil(totalUsers / limit),
-      currentPage: page
+      currentPage: page,
     });
-
   } catch (error) {
     console.error("Get Users Error:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
 
 router.put("/update", upload.single("image"), async (req, res) => {
   try {
