@@ -7,7 +7,6 @@ const UserList = ({ refresh }) => {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState({
     key: "name",
@@ -17,7 +16,12 @@ const UserList = ({ refresh }) => {
   const fetchUsers = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users?page=${currentPage}&limit=${LIMIT}&search=${search}&sort=${sorting.key}&order=${sorting.direction}`
+        `http://localhost:5000/api/users?page=${currentPage}&limit=${LIMIT}&search=${search}&sort=${sorting.key}&order=${sorting.direction}`,
+        {
+          headers:{
+            Authorization: localStorage.getItem("token")
+          }
+        }
       );
       const data = await response.json();
 
@@ -114,6 +118,7 @@ const UserList = ({ refresh }) => {
                 <td>{user.age}</td>
                 <td>{user.email}</td>
                 <td>{user.country}</td>
+                <td>{user.password}</td>
                 <td>
                   {user.image ? (
                     <img

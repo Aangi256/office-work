@@ -25,7 +25,7 @@ const Form = ({ refreshUsers }) => {
   const validateForm = () => {
     
     const newErrors = {};
-    const { name, age, email, country, image } = data;
+    const { name, age, email, country, image , password } = data;
 
     if (!name){ 
       newErrors.name = 'Name is required';
@@ -52,7 +52,7 @@ const Form = ({ refreshUsers }) => {
     } else {
       const emailExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailExp.test(email))
-        newErrorss.email = "Invalid email address";
+        newErrors.email = "Invalid email address";
     }
 
     if (!country) {
@@ -66,6 +66,12 @@ const Form = ({ refreshUsers }) => {
       if (!allowedTypes.includes(image.type)) {
         newErrors.image = "Only JPG, JPEG, PNG allowed";
       }
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
 
   setErrors(newErrors);
@@ -108,9 +114,13 @@ const Form = ({ refreshUsers }) => {
       formData.append("country", data.country);
       formData.append("Gender", data.Gender);
       formData.append("image", data.image);
+      formData.append("password", data.password);
 
       const response = await fetch("http://localhost:5000/api/users/add", {
         method: "POST",
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
         body: formData
       });
 
@@ -118,7 +128,7 @@ const Form = ({ refreshUsers }) => {
 
       if (response.ok) {
         alert("Form submitted successfully");
-        // setData({});
+        setData({});
         refreshUsers();
         setErrors({});
       } else {
@@ -200,6 +210,15 @@ const Form = ({ refreshUsers }) => {
           className={errors.image ? "error-input" : ""} 
         />
           {errors.image && <p className="error-text">{errors.image}</p>} 
+        <br /><br />
+
+        <input
+          type="password"
+          placeholder="Enter password"
+          value={data.password || ""}
+          onChange={(e) => handleChange(e, "password")}
+        />
+        {errors.password && <p className="error-text">{errors.password}</p>}
         <br /><br />
 
         <button type="submit">Submit</button>

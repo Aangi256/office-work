@@ -1,7 +1,9 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const multer = require("multer"); // ✅ FIXED
+const multer = require("multer");
 const app = express();
 
 const PORT = 5000;
@@ -17,7 +19,7 @@ mongoose
   .then(() => console.log("Database connected"))
   .catch((err) => console.log("DB connection error:", err));
 
-// Routes
+
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/users", userRoutes);
 
