@@ -7,44 +7,56 @@ const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 
 
-(async () => {
-  const hash = "$2a$10$5xk3wZ8j2n7mU9rJ9ZP9ReRZbJ1n8k9Fz6JcYkZz5y0xQq8bZ7E6K";
-  const result = await bcrypt.compare("Aangi@m", hash);
-  console.log(result);
-})();
+
 
 router.post("/login", async (req, res) => {
+ 
+
   try {
     const { email, password } = req.body;
 
+    console.log(" Login request:", { email, password });
+
     const user = await User.findOne({ email: email.toLowerCase() });
+    console.log(" User from DB:", user);
+
     if (!user || !user.password) {
+      console.log(" User not found or password missing");
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    // const testPasswords = ["Aangi@m", "Kaivna@7", "123456", "password"];
+    // for (const p of testPasswords) {
+    // const r = await bcrypt.compare(p, user.password);
+    // console.log(`TEST "${p}" =>`, r);
+}
+
     const inputPassword = password.trim();
-    let isMatch = false;
+    console.log(" Input password:", inputPassword);
+    console.log(" DB password:", user.password);
 
     const isBcryptHash = /^\$2[aby]\$\d{2}\$/.test(user.password);
+    console.log(" Is bcrypt hash:", isBcryptHash);
 
-    
+    let isMatch = false;
+
     if (isBcryptHash) {
       isMatch = await bcrypt.compare(inputPassword, user.password);
-    }
-   
-    else {
+      console.log(" bcrypt compare result:", isMatch);
+    } else {
       isMatch = inputPassword === user.password;
+      console.log(" plaintext compare result:", isMatch);
 
       if (isMatch) {
         const hashedPassword = await bcrypt.hash(inputPassword, 10);
         user.password = hashedPassword;
         await user.save();
-
-        console.log(`🔁 Password migrated for ${user.email}`);
+        console.log(" Password migrated to hash");
       }
     }
 
     if (!isMatch) {
+      console.log(" Password mismatch");
       return res.status(401).json({ message: "Invalid password" });
     }
 
@@ -54,15 +66,18 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    console.log(" Login success");
+
     res.status(200).json({
       message: "Login success",
       token,
     });
   } catch (error) {
-    console.error("Login Error:", error);
+    console.error(" Login Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 
