@@ -1,25 +1,28 @@
 const jwt = require("jsonwebtoken");
 
-const auth = (req , res, next)=>{
-    const token =req.headers.authorization;
-    
-    if(!token){
-        return res.status(401).json({message:"Access denied"});
+module.exports = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Invalid auth header" });
     }
 
-    try {
-        const decoded = jwt.verify(token, "SECRET_KEY");
+    const token = authHeader.split(" ")[1];
 
-        req.userId = decoded.id;
-        next();
-    } catch (err) {
-        res.status(401).json({message:"Invalid token"});
+    if (!token || token === "undefined") {
+      return res.status(401).json({ message: "Token missing" });
     }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "secret123"
+    );
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error("Auth middleware error:", error.message);
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 };
-
-
-module.exports = auth;
-
-
-
-

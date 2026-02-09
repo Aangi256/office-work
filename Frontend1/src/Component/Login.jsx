@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import "./Login.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,9 +15,16 @@ const Login = () => {
         {email,password}
 );
 
+      if (!res.data.token) {
+      alert("Token not received");
+      return;
+    }
 
-      localStorage.setItem("token", res.data.token);
+
+      // localStorage.setItem("token", res.data.token);
+      login(res.data.token);
       navigate("/");
+
     } catch (error) {
       console.error("Login error:", error);
 
@@ -28,25 +36,28 @@ const Login = () => {
     }
   };
 
-  return (
-    <div>
+return (
+  <div className="login-container">
+    <div className="login-card">
       <h2>Login</h2>
 
       <input
         type="email"
         placeholder="Email"
-        onChange={e => setEmail(e.target.value)}
+        onChange={(e) => setEmail(e.target.value)}
       />
 
       <input
         type="password"
         placeholder="Password"
-        onChange={e => setPassword(e.target.value)}
+        onChange={(e) => setPassword(e.target.value)}
       />
 
       <button onClick={handleLogin}>Login</button>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Login;

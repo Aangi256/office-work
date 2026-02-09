@@ -2,22 +2,20 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const upload = require("../middleware/upload");
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
-
-
-
+const saltRounds = 10; // The cost factor (higher is more secure but slower)
+const userPassword = 'mySuperSecretPassword123'; 
 
 router.post("/login", async (req, res) => {
  
-
   try {
     const { email, password } = req.body;
 
     console.log(" Login request:", { email, password });
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email });
     console.log(" User from DB:", user);
 
     if (!user || !user.password) {
@@ -25,35 +23,13 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // const testPasswords = ["Aangi@m", "Kaivna@7", "123456", "password"];
-    // for (const p of testPasswords) {
-    // const r = await bcrypt.compare(p, user.password);
-    // console.log(`TEST "${p}" =>`, r);
-}
-
-    const inputPassword = password.trim();
-    console.log(" Input password:", inputPassword);
+    console.log(" Input password:", password);
     console.log(" DB password:", user.password);
-
-    const isBcryptHash = /^\$2[aby]\$\d{2}\$/.test(user.password);
-    console.log(" Is bcrypt hash:", isBcryptHash);
-
     let isMatch = false;
 
-    if (isBcryptHash) {
-      isMatch = await bcrypt.compare(inputPassword, user.password);
-      console.log(" bcrypt compare result:", isMatch);
-    } else {
-      isMatch = inputPassword === user.password;
-      console.log(" plaintext compare result:", isMatch);
+     isMatch = await bcrypt.compare(password, user.password);
 
-      if (isMatch) {
-        const hashedPassword = await bcrypt.hash(inputPassword, 10);
-        user.password = hashedPassword;
-        await user.save();
-        console.log(" Password migrated to hash");
-      }
-    }
+      console.log(" plaintext compare result:", isMatch);
 
     if (!isMatch) {
       console.log(" Password mismatch");
@@ -62,7 +38,7 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || "secret123",
       { expiresIn: "1d" }
     );
 
@@ -93,10 +69,8 @@ router.post("/add", upload.single("image"), async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ message: "Email already exists" });
     }
-
-   
     const hashedPassword = await bcrypt.hash(password, 10);
-
+  
     const user = new User({
       name,
       age: Number(age),
@@ -160,9 +134,11 @@ router.get("/", auth, async (req, res) => {
     const totalUsers = await User.countDocuments(searchQuery);
 
     const users = await User.find(searchQuery)
-      .sort({ [sortField]: order })
-      .skip(skip)
-      .limit(limit);
+  .select("-password")
+  .sort({ [sort]: order })
+  .skip(skip)
+  .limit(limit);
+
 
     res.status(200).json({
       users,

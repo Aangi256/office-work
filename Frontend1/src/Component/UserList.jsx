@@ -16,13 +16,14 @@ const UserList = ({ refresh }) => {
   const fetchUsers = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/users?page=${currentPage}&limit=${LIMIT}&search=${search}&sort=${sorting.key}&order=${sorting.direction}`,
-        {
-          headers:{
-            Authorization: localStorage.getItem("token")
-          }
-        }
+         `http://localhost:5000/api/users?page=${currentPage}&limit=${LIMIT}&search=${search}&sort=${sorting.key}&order=${sorting.direction}`,
+         {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+         }
       );
+
       const data = await response.json();
 
       setUsers(data.users);
@@ -118,7 +119,7 @@ const UserList = ({ refresh }) => {
                 <td>{user.age}</td>
                 <td>{user.email}</td>
                 <td>{user.country}</td>
-                <td>{user.password}</td>
+                
                 <td>
                   {user.image ? (
                     <img

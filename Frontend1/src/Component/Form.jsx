@@ -204,21 +204,21 @@ const Form = ({ refreshUsers }) => {
         <br /><br />
 
         <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => handleChange(e, "image")}
-          className={errors.image ? "error-input" : ""} 
-        />
-          {errors.image && <p className="error-text">{errors.image}</p>} 
-        <br /><br />
-
-        <input
           type="password"
           placeholder="Enter password"
           value={data.password || ""}
           onChange={(e) => handleChange(e, "password")}
         />
         {errors.password && <p className="error-text">{errors.password}</p>}
+        <br /><br />
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => handleChange(e, "image")}
+          className={errors.image ? "error-input" : ""} 
+        />
+          {errors.image && <p className="error-text">{errors.image}</p>} 
         <br /><br />
 
         <button type="submit">Submit</button>

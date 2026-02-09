@@ -33,6 +33,7 @@ form {
 input[type="text"],
 input[type="email"],
 select,
+input[type="password"],
 input[type="file"] {
   width: 100%;
   padding: 10px;
@@ -42,6 +43,7 @@ input[type="file"] {
   font-size: 14px;
   color: #d6d4d4;
 }
+
 
 input::placeholder {
   color: #d6d4d4;
