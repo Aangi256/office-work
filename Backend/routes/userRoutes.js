@@ -5,7 +5,7 @@ const upload = require("../middleware/upload");
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
-const saltRounds = 10; // The cost factor (higher is more secure but slower)
+const saltRounds = 10; 
 const userPassword = 'mySuperSecretPassword123'; 
 
 router.post("/login", async (req, res) => {
